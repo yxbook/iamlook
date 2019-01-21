@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: iamlook-consumer
+server:
+  port: 9091
+#指定当前服务/应用的名字（同样的服务名字相同，不要和别的服务同名）
+dubbo:
+  application:
+    name: iamlook-consumer
+  protocol:
+    name: dubbo
+    port: 20880
+  #指定注册中心的位置
+  registry:
+    address: zookeeper://localhost:2181
+  #统一设置服务提供方的规则
+  provider:
+    timeout: 5000
+demo:
+  service:
+    version: 1.0.1
+
+
+
+
+
+
+
