@@ -1,4 +1,4 @@
-package com.iamlook.um.utils;
+package com.iamlook.um.config;
 
 import org.apache.shiro.authc.HostAuthenticationToken;
 

@@ -1,4 +1,4 @@
-package com.iamlook.um.utils;
+package com.iamlook.um.config;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iamlook.um.query.LoginUser;
@@ -27,8 +27,8 @@ public class JWTShiroRealm extends AuthorizingRealm {
 	@Reference(version = "1.0.0")
     protected ISysUserService iSysUserService;
 
-    public JWTShiroRealm(ISysUserService iSysUserService){
-        this.iSysUserService = iSysUserService;
+    public JWTShiroRealm(){
+        System.out.println("BBBBBBBBBBBBBBBBBBBBB");
         this.setCredentialsMatcher(new JWTCredentialsMatcher());
     }
 
@@ -49,6 +49,11 @@ public class JWTShiroRealm extends AuthorizingRealm {
 
         JWTToken jwtToken = (JWTToken) authcToken;
         String token = jwtToken.getToken();
+
+        System.out.println("BBBBBBBBBBBBBBBBBBBBB:" + iSysUserService);
+        System.out.println("BBBBBBBBBBBBBBBBBBBBB:" + iSysUserService);
+        System.out.println("BBBBBBBBBBBBBBBBBBBBB:" + iSysUserService);
+        System.out.println("BBBBBBBBBBBBBBBBBBBBB:" + iSysUserService);
 
         //获取上次token生成时的salt值和登录用户信息
         LoginUser user = iSysUserService.getJwtTokenInfo(JwtUtils.getUsername(token));

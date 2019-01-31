@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
  * @date 2018/6/7
  */
 @EnableDubbo
-@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
+@SpringBootApplication
 public class DubboConsumerApplication {
 
     public static void main(String[] args) {

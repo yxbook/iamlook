@@ -1,9 +1,9 @@
 package com.iamlook.um.web;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.iamlook.um.config.JwtUtils;
 import com.iamlook.um.query.LoginUser;
 import com.iamlook.um.service.ISysUserService;
-import com.iamlook.um.utils.JwtUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;

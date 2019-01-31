@@ -1,10 +1,8 @@
 package com.iamlook.um.filter;
 
-import com.alibaba.dubbo.config.annotation.Reference;
+import com.iamlook.um.config.JWTToken;
+import com.iamlook.um.config.JwtUtils;
 import com.iamlook.um.query.LoginUser;
-import com.iamlook.um.service.ISysUserService;
-import com.iamlook.um.utils.JWTToken;
-import com.iamlook.um.utils.JwtUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -31,18 +29,14 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 	
     private static final int tokenRefreshInterval = 300;
 
-    @Reference(version = "1.0.0")
-    private ISysUserService isysUserService;
 
-
-    public JwtAuthFilter(ISysUserService userService){
-        this.isysUserService = userService;
-        this.setLoginUrl("/login");
+    public JwtAuthFilter(){
+        this.setLoginUrl("/iamlook/login");
     }
 
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
-        LOGGER.info("Adeep-------------JwtAuthFilter--preHandle");
+        System.err.println("--------------JwtAuthFilter--preHandle----------------");
         HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
         if (httpServletRequest.getMethod().equals(RequestMethod.OPTIONS.name())) //对于OPTION请求做拦截，不做token校验
             return false;
@@ -52,14 +46,14 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 
     @Override
     protected void postHandle(ServletRequest request, ServletResponse response){
-        LOGGER.info("Adeep-------------JwtAuthFilter--postHandle");
+        System.err.println("--------------JwtAuthFilter--postHandle----------------");
         this.fillCorsHeader(WebUtils.toHttp(request), WebUtils.toHttp(response));
         request.setAttribute("jwtShiroFilter.FILTERED", true);
     }
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        LOGGER.info("Adeep-------------JwtAuthFilter--isAccessAllowed");
+        System.err.println("--------------JwtAuthFilter--isAccessAllowed----------------");
         if(this.isLoginRequest(request, response))
             return true;
         Boolean afterFiltered = (Boolean)(request.getAttribute("jwtShiroFilter.FILTERED"));
@@ -70,7 +64,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         try {
             allowed = executeLogin(request, response);
         } catch(IllegalStateException e){ //not found any token
-            LOGGER.error("Not found any token");
+            LOGGER.error("Not found any token:" + e.getMessage() );
         }catch (Exception e) {
             LOGGER.error("Error occurs when login", e);
         }
@@ -79,7 +73,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 
     @Override
     protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) {
-        LOGGER.info("Adeep-------------JwtAuthFilter--createToken");
+        System.err.println("--------------JwtAuthFilter--createToken----------------");
         String jwtToken = getAuthzHeader(servletRequest);
         if(StringUtils.isNotBlank(jwtToken)&&!JwtUtils.isTokenExpired(jwtToken))
             return new JWTToken(jwtToken);
@@ -89,7 +83,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
-        LOGGER.info("Adeep-------------JwtAuthFilter--onAccessDenied");
+        System.err.println("--------------JwtAuthFilter--onAccessDenied----------------");
         HttpServletResponse httpResponse = WebUtils.toHttp(servletResponse);
         httpResponse.setCharacterEncoding("UTF-8");
         httpResponse.setContentType("application/json;charset=UTF-8");
@@ -100,7 +94,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
-        LOGGER.info("Adeep-------------JwtAuthFilter--onLoginSuccess");
+        System.err.println("--------------JwtAuthFilter--onLoginSuccess----------------");
         HttpServletResponse httpResponse = WebUtils.toHttp(response);
         String newToken = null;
         if(token instanceof JWTToken){
@@ -119,25 +113,23 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
+        System.err.println("--------------JwtAuthFilter--onLoginFailure----------------");
         LOGGER.error("Validate token fail, token:{}, error:{}", token.toString(), e.getMessage());
         return false;
     }
 
     protected String getAuthzHeader(ServletRequest request) {
-        LOGGER.info("Adeep-------------JwtAuthFilter--getAuthzHeader");
         HttpServletRequest httpRequest = WebUtils.toHttp(request);
         String header = httpRequest.getHeader("x-auth-token");
         return StringUtils.removeStart(header, "Bearer ");
     }
 
     protected boolean shouldTokenRefresh(Date issueAt){
-        LOGGER.info("Adeep-------------JwtAuthFilter--shouldTokenRefresh");
         LocalDateTime issueTime = LocalDateTime.ofInstant(issueAt.toInstant(), ZoneId.systemDefault());
         return LocalDateTime.now().minusSeconds(tokenRefreshInterval).isAfter(issueTime);
     }
 
     protected void fillCorsHeader(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
-        LOGGER.info("Adeep-------------JwtAuthFilter--fillCorsHeader");
         httpServletResponse.setHeader("Access-control-Allow-Origin", httpServletRequest.getHeader("Origin"));
         httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,HEAD");
         httpServletResponse.setHeader("Access-Control-Allow-Headers", httpServletRequest.getHeader("Access-Control-Request-Headers"));

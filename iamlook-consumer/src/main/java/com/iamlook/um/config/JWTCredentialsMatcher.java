@@ -1,4 +1,4 @@
-package com.iamlook.um.utils;
+package com.iamlook.um.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

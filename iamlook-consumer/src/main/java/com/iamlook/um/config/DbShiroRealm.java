@@ -1,4 +1,4 @@
-package com.iamlook.um.utils;
+package com.iamlook.um.config;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iamlook.um.query.LoginUser;
@@ -13,31 +13,32 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-
+@Component
 public class DbShiroRealm extends AuthorizingRealm {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(DbShiroRealm.class);
 	
 	private static final String encryptSalt = "F12839WhsnnEV$#23b";
+
 	@Reference(version = "1.0.0")
 	private ISysUserService iSysUserService;
-	
-	public DbShiroRealm(ISysUserService iSysUserService) {
-		this.iSysUserService = iSysUserService;
+
+	public DbShiroRealm() {
 		this.setCredentialsMatcher(new HashedCredentialsMatcher(Sha256Hash.ALGORITHM_NAME));
 	}
 	
 	@Override
     public boolean supports(AuthenticationToken token) {
-		LOGGER.info("Adeep-------------DbShiroRealm---------supports");
+		System.err.println("---DbShiroRealm--supports----------------");
 		return token instanceof UsernamePasswordToken;
     }
 	
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-		LOGGER.info("Adeep-------------DbShiroRealm---------doGetAuthenticationInfo");
+		System.err.println("---DbShiroRealm--doGetAuthenticationInfo----------------");
 		UsernamePasswordToken userpasswordToken = (UsernamePasswordToken)token;
 		String username = userpasswordToken.getUsername();
 
@@ -55,7 +56,7 @@ public class DbShiroRealm extends AuthorizingRealm {
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 
-		LOGGER.info("Adeep-------------DbShiroRealm---------doGetAuthorizationInfo不一样");
+		System.err.println("---DbShiroRealm--doGetAuthorizationInfo----------------");
 
 		SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 		LoginUser user = (LoginUser) principals.getPrimaryPrincipal();
