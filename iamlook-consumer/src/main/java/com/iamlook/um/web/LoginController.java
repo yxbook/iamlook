@@ -2,6 +2,7 @@ package com.iamlook.um.web;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iamlook.um.config.JwtUtils;
+import com.iamlook.um.dto.ResultInfo;
 import com.iamlook.um.query.LoginUser;
 import com.iamlook.um.service.ISysUserService;
 import org.apache.shiro.SecurityUtils;
@@ -32,10 +33,10 @@ public class LoginController {
      * @return token
      */
     @PostMapping(value = "/login")
-    public ResponseEntity<Void> login(@RequestBody LoginUser loginUser, HttpServletRequest request, HttpServletResponse response){
+    public ResultInfo login(@RequestBody LoginUser loginUser, HttpServletRequest request, HttpServletResponse response){
         Subject subject = SecurityUtils.getSubject();
         try {
-            UsernamePasswordToken token = new UsernamePasswordToken(loginUser.getUsername(), loginUser.getPassword());
+            UsernamePasswordToken token = new UsernamePasswordToken(loginUser.getUserName(), loginUser.getPassword());
             subject.login(token);
 
             LoginUser user = (LoginUser) subject.getPrincipal();
@@ -43,7 +44,7 @@ public class LoginController {
             //JwtUtils.generateSalt()
             String salt = "12345";
 
-            String jwtToken = JwtUtils.sign(user.getUsername(), salt, 3600);
+            String jwtToken = JwtUtils.sign(user.getUserName(), salt, 3600);
             /*
             *
             *将salt保存到数据库或者缓存中
@@ -52,11 +53,11 @@ public class LoginController {
 
 
             response.setHeader("x-auth-token", jwtToken);
-            return ResponseEntity.ok().build();
+            return new ResultInfo("200", "登录成功");
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return new ResultInfo("0", "登录异常：" + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new ResultInfo("0", "登录异常：" + e.getMessage());
         }
     }
 
@@ -70,7 +71,7 @@ public class LoginController {
         if(subject.getPrincipals() != null) {
             LoginUser user = (LoginUser)subject.getPrincipals().getPrimaryPrincipal();
             //清除数据库中的token信息
-            isysUserService.deleteLoginInfo(user.getUsername());
+            isysUserService.deleteLoginInfo(user.getUserName());
         }
         SecurityUtils.getSubject().logout();
         return ResponseEntity.ok().build();

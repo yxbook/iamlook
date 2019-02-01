@@ -100,7 +100,7 @@ public class ShiroConfig {
     @Bean
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
-        chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");
+        chainDefinition.addPathDefinition("/iamlook/login", "noSessionCreation,anon");
         chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
         chainDefinition.addPathDefinition("/image/**", "anon");  
         chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问

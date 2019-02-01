@@ -13,7 +13,7 @@ public class LoginUser implements Serializable {
 
     private static final long serialVersionUID = -9077975168976887742L;
 
-    private String username;
+    private String userName;
     private char[] password;
     private String encryptPwd;
     private Long userId;

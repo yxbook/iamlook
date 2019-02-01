@@ -102,7 +102,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
             LoginUser user = (LoginUser) subject.getPrincipal();
             boolean shouldRefresh = shouldTokenRefresh(JwtUtils.getIssuedAt(jwtToken.getToken()));
             if(shouldRefresh) {
-                newToken = JwtUtils.sign(user.getUsername(), user.getSalt(), 3600);
+                newToken = JwtUtils.sign(user.getUserName(), user.getSalt(), 3600);
             }
         }
         if(StringUtils.isNotBlank(newToken))
@@ -130,8 +130,8 @@ public class JwtAuthFilter extends AuthenticatingFilter {
     }
 
     protected void fillCorsHeader(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
-        httpServletResponse.setHeader("Access-control-Allow-Origin", httpServletRequest.getHeader("Origin"));
+        httpServletResponse.setHeader("Access-control-Allow-Origin", "*");
         httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,HEAD");
-        httpServletResponse.setHeader("Access-Control-Allow-Headers", httpServletRequest.getHeader("Access-Control-Request-Headers"));
+        httpServletResponse.setHeader("Access-Control-Allow-Headers", "*");
     }
 }
