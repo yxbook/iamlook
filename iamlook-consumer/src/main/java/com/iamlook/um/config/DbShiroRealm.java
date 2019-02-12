@@ -33,6 +33,8 @@ public class DbShiroRealm extends AuthorizingRealm {
 	@Override
     public boolean supports(AuthenticationToken token) {
 		System.err.println("---DbShiroRealm--supports----------------");
+		System.err.println(token instanceof UsernamePasswordToken);
+		System.err.println("---DbShiroRealm--supports----------------");
 		return token instanceof UsernamePasswordToken;
     }
 	

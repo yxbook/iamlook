@@ -64,8 +64,10 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         try {
             allowed = executeLogin(request, response);
         } catch(IllegalStateException e){ //not found any token
+            e.printStackTrace();
             LOGGER.error("Not found any token:" + e.getMessage() );
         }catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error("Error occurs when login", e);
         }
         return allowed || super.isPermissive(mappedValue);
@@ -131,7 +133,8 @@ public class JwtAuthFilter extends AuthenticatingFilter {
 
     protected void fillCorsHeader(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         httpServletResponse.setHeader("Access-control-Allow-Origin", "*");
-        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,HEAD");
+        httpServletResponse.setHeader("Access-Control-Allow-Methods", "*");
         httpServletResponse.setHeader("Access-Control-Allow-Headers", "*");
+        httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
     }
 }

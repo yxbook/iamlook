@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/iamlook")
+@RequestMapping("/api/iamlook")
 public class LoginController {
 	
 	private Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
@@ -53,7 +53,9 @@ public class LoginController {
 
 
             response.setHeader("x-auth-token", jwtToken);
-            return new ResultInfo("200", "登录成功");
+            ResultInfo info = new ResultInfo();
+            info.setData(jwtToken);
+            return info;
         } catch (AuthenticationException e) {
             return new ResultInfo("0", "登录异常：" + e.getMessage());
         } catch (Exception e) {

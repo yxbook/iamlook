@@ -68,7 +68,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public LoginUser getUserInfo(String userName) {
         LoginUser user = new LoginUser();
         user.setUserId(1L);
-        user.setUsername("admin");
+        user.setUserName("admin");
         return user;
     }
 
