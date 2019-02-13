@@ -25,37 +25,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Autowired
     private RedisUtil redisUtil;
-    /**
-     * 保存user登录信息，返回token
-     */
-    public int saveJwtToken(String username) {
-        /**
-         * @todo 将salt保存到数据库或者缓存中
-         * redisTemplate.opsForValue().set("token:"+username, salt, 3600, TimeUnit.SECONDS);
-         */
-        redisUtil.set("name", "youxun", 100);
-        String key = (String) redisUtil.get("name");
 
-        System.out.println(key);
-
-        return 1; //生成jwt token，设置过期时间为1小时
-    }
-
-    /**
-     * 获取上次token生成时的salt值和登录用户信息
-     * @param username
-     * @return
-     */
-    public LoginUser getJwtTokenInfo(String username) {
-        String salt = "12345";
-        /**
-         * @todo 从数据库或者缓存中取出jwt token生成时用的salt
-         * salt = redisTemplate.opsForValue().get("token:"+username);
-         */
-        LoginUser user = getUserInfo(username);
-        user.setSalt(salt);
-        return user;
-    }
+    @Autowired
+    private SysUserMapper sysUserMapper;
 
     /**
      * 清除token信息
@@ -74,11 +46,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param userName
      * @return
      */
-    public LoginUser getUserInfo(String userName) {
-        LoginUser user = new LoginUser();
-        user.setUserId(1L);
-        user.setUsername("admin");
-        return user;
+    public SysUser getUserInfo(String userName) {
+        SysUser puser = new SysUser();
+        puser.setLoginName(userName);
+        return sysUserMapper.selectOne(puser);
     }
 
     /**
@@ -86,7 +57,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param userId
      * @return
      */
-    public List<String> getUserRoles(Long userId){
+    public List<String> getUserRoles(Integer userId){
         return Arrays.asList("admin");
     }
 

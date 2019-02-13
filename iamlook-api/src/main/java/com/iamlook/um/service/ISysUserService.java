@@ -1,7 +1,7 @@
 package com.iamlook.um.service;
 
-import com.iamlook.um.entity.SysUser;
 import com.baomidou.mybatisplus.service.IService;
+import com.iamlook.um.entity.SysUser;
 import com.iamlook.um.query.LoginUser;
 
 import java.util.List;
@@ -16,14 +16,9 @@ import java.util.List;
  */
 public interface ISysUserService extends IService<SysUser> {
 
+    public SysUser getUserInfo(String userName);
 
-    public int saveJwtToken(String token);
-
-    public LoginUser getJwtTokenInfo(String username);
-
-    public LoginUser getUserInfo(String userName);
-
-    public List<String> getUserRoles(Long userId);
+    public List<String> getUserRoles(Integer userId);
 
     public void deleteLoginInfo(String username);
 

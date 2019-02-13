@@ -1,6 +1,8 @@
 package com.iamlook.um.config;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.iamlook.um.entity.SysUser;
 import com.iamlook.um.query.LoginUser;
 import com.iamlook.um.service.ISysUserService;
 import org.apache.shiro.authc.AuthenticationException;
@@ -28,13 +30,11 @@ public class JWTShiroRealm extends AuthorizingRealm {
     protected ISysUserService iSysUserService;
 
     public JWTShiroRealm(){
-        System.out.println("BBBBBBBBBBBBBBBBBBBBB");
         this.setCredentialsMatcher(new JWTCredentialsMatcher());
     }
 
     @Override
     public boolean supports(AuthenticationToken token) {
-        LOGGER.info("Adeep----------------JWTShiroRealm---------------supports");
         return token instanceof JWTToken;
     }
 
@@ -44,20 +44,20 @@ public class JWTShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
-
-        LOGGER.info("Adeep----------------JWTShiroRealm---------------doGetAuthenticationInfo");
-
         JWTToken jwtToken = (JWTToken) authcToken;
         String token = jwtToken.getToken();
-
-        System.out.println("BBBBBBBBBBBBBBBBBBBBB:" + iSysUserService);
-        System.out.println("BBBBBBBBBBBBBBBBBBBBB:" + iSysUserService);
-        System.out.println("BBBBBBBBBBBBBBBBBBBBB:" + iSysUserService);
-        System.out.println("BBBBBBBBBBBBBBBBBBBBB:" + iSysUserService);
-
         //获取上次token生成时的salt值和登录用户信息
-        LoginUser user = iSysUserService.getJwtTokenInfo(JwtUtils.getUsername(token));
-
+        String username = JwtUtils.getUsername(token);
+        SysUser puser = new SysUser();
+        puser.setLoginName(username);
+        EntityWrapper<SysUser> wrapper = new EntityWrapper<SysUser>();
+        wrapper.setEntity(puser);
+        SysUser sysUser = iSysUserService.selectOne(wrapper);
+        LoginUser user = new LoginUser();
+        user.setUserId(sysUser.getUserId());
+        user.setUsername(username);
+        user.setSalt(sysUser.getSalt());
+        user.setPassword(sysUser.getPassword().toCharArray());
         if(user == null)
             throw new AuthenticationException("token过期，请重新登录");
 
@@ -68,10 +68,6 @@ public class JWTShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-
-
-        LOGGER.info("Adeep----------------JWTShiroRealm---------------doGetAuthorizationInfo肉丝");
-
         return new SimpleAuthorizationInfo();
     }
 }

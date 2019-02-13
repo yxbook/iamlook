@@ -1,8 +1,10 @@
 package com.iamlook.um.web;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.iamlook.um.config.JwtUtils;
 import com.iamlook.um.dto.ResultInfo;
+import com.iamlook.um.entity.SysUser;
 import com.iamlook.um.query.LoginUser;
 import com.iamlook.um.service.ISysUserService;
 import org.apache.shiro.SecurityUtils;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/iamlook")
@@ -33,6 +36,15 @@ public class LoginController {
      */
     @PostMapping(value = "/login")
     public ResultInfo login(@RequestBody LoginUser loginUser, HttpServletRequest request, HttpServletResponse response){
+
+        SysUser puser = new SysUser();
+        puser.setLoginName(loginUser.getUsername());
+        EntityWrapper<SysUser> wrapper = new EntityWrapper<SysUser>();
+        wrapper.setEntity(puser);
+        SysUser sysUser = isysUserService.selectOne(wrapper);
+        if(sysUser == null){
+            return new ResultInfo("0", "用户不存在!");
+        }
         Subject subject = SecurityUtils.getSubject();
         try {
             UsernamePasswordToken token = new UsernamePasswordToken(loginUser.getUsername(), loginUser.getPassword());
@@ -44,10 +56,13 @@ public class LoginController {
             String jwtToken = JwtUtils.sign(user.getUsername(), salt, 3600);
             /*
             *
-            *将salt保存到数据库或者缓存中
+            *将salt保存到数据库
             * */
-            isysUserService.saveJwtToken(user.getUsername());
-
+            sysUser.setSalt(salt);
+            sysUser.setUpdateTime(new Date());
+            sysUser.setUpdateBy(user.getUsername());
+            boolean result = isysUserService.updateById(sysUser);
+            System.out.println(result);
             response.setHeader("x-auth-token", jwtToken);
             ResultInfo info = new ResultInfo();
             info.setData(jwtToken);

@@ -1,6 +1,8 @@
 package com.iamlook.um.config;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.iamlook.um.entity.SysUser;
 import com.iamlook.um.query.LoginUser;
 import com.iamlook.um.service.ISysUserService;
 import org.apache.shiro.authc.*;
@@ -43,13 +45,18 @@ public class DbShiroRealm extends AuthorizingRealm {
 		System.err.println("---DbShiroRealm--doGetAuthenticationInfo----------------");
 		UsernamePasswordToken userpasswordToken = (UsernamePasswordToken)token;
 		String username = userpasswordToken.getUsername();
-
-		//从数据库中获取用户信息,这里写死
-		LoginUser user = iSysUserService.getUserInfo(username);
-        user.setEncryptPwd(new Sha256Hash("123456", encryptSalt).toHex());
+		//从数据库中获取用户信息
+		SysUser puser = new SysUser();
+		puser.setLoginName(username);
+		EntityWrapper<SysUser> wrapper = new EntityWrapper<SysUser>();
+		wrapper.setEntity(puser);
+		SysUser sysUser = iSysUserService.selectOne(wrapper);
+		LoginUser user = new LoginUser();
+		user.setUserId(sysUser.getUserId());
+		user.setUsername(username);
+        user.setEncryptPwd(new Sha256Hash(sysUser.getPassword(), encryptSalt).toHex());
         if(user == null)
 			throw new AuthenticationException("用户名或者密码错误");
-		
 		return new SimpleAuthenticationInfo(user, user.getEncryptPwd(), ByteSource.Util.bytes(encryptSalt), "dbRealm");
 	}
 

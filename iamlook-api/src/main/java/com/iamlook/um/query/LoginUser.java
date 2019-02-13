@@ -16,7 +16,7 @@ public class LoginUser implements Serializable {
     private String username;
     private char[] password;
     private String encryptPwd;
-    private Long userId;
+    private Integer userId;
     private String salt;
     private List<String> roles;
 
