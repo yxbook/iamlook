@@ -6,6 +6,8 @@ import com.iamlook.um.entity.SysUser;
 import com.iamlook.um.mapper.SysUserMapper;
 import com.iamlook.um.query.LoginUser;
 import com.iamlook.um.service.ISysUserService;
+import com.iamlook.um.utils.RedisUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +23,8 @@ import java.util.List;
 @Service(version = "1.0.0", timeout = 60000)
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
 
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 保存user登录信息，返回token
      */
@@ -29,6 +33,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
          * @todo 将salt保存到数据库或者缓存中
          * redisTemplate.opsForValue().set("token:"+username, salt, 3600, TimeUnit.SECONDS);
          */
+        redisUtil.set("name", "youxun", 100);
+        String key = (String) redisUtil.get("name");
+
+        System.out.println(key);
+
         return 1; //生成jwt token，设置过期时间为1小时
     }
 

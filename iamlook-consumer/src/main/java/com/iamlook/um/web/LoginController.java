@@ -11,7 +11,6 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,16 +39,14 @@ public class LoginController {
             subject.login(token);
 
             LoginUser user = (LoginUser) subject.getPrincipal();
+            String salt = JwtUtils.generateSalt();
             //生成jwt token，设置过期时间为1小时
-            //String salt = JwtUtils.generateSalt();
-            String salt = "12345";
             String jwtToken = JwtUtils.sign(user.getUsername(), salt, 3600);
             /*
             *
             *将salt保存到数据库或者缓存中
             * */
-            //isysUserService.saveJwtToken(jwtToken);
-
+            isysUserService.saveJwtToken(user.getUsername());
 
             response.setHeader("x-auth-token", jwtToken);
             ResultInfo info = new ResultInfo();
