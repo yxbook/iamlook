@@ -36,15 +36,13 @@ public class LoginController {
     public ResultInfo login(@RequestBody LoginUser loginUser, HttpServletRequest request, HttpServletResponse response){
         Subject subject = SecurityUtils.getSubject();
         try {
-            UsernamePasswordToken token = new UsernamePasswordToken(loginUser.getUserName(), loginUser.getPassword());
+            UsernamePasswordToken token = new UsernamePasswordToken(loginUser.getUsername(), loginUser.getPassword());
             subject.login(token);
 
             LoginUser user = (LoginUser) subject.getPrincipal();
             //生成jwt token，设置过期时间为1小时
-            //JwtUtils.generateSalt()
-            String salt = "12345";
-
-            String jwtToken = JwtUtils.sign(user.getUserName(), salt, 3600);
+            String salt = JwtUtils.generateSalt();
+            String jwtToken = JwtUtils.sign(user.getUsername(), salt, 3600);
             /*
             *
             *将salt保存到数据库或者缓存中
@@ -73,7 +71,7 @@ public class LoginController {
         if(subject.getPrincipals() != null) {
             LoginUser user = (LoginUser)subject.getPrincipals().getPrimaryPrincipal();
             //清除数据库中的token信息
-            isysUserService.deleteLoginInfo(user.getUserName());
+            isysUserService.deleteLoginInfo(user.getUsername());
         }
         SecurityUtils.getSubject().logout();
         return ResponseEntity.ok().build();

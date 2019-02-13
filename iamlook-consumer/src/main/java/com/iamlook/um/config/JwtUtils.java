@@ -32,7 +32,7 @@ public class JwtUtils {
     public static String getUsername(String token) {
         try {
             DecodedJWT jwt = JWT.decode(token);
-            return jwt.getClaim("userName").asString();
+            return jwt.getClaim("username").asString();
         } catch (JWTDecodeException e) {
             return null;
         }
@@ -50,7 +50,7 @@ public class JwtUtils {
             Algorithm algorithm = Algorithm.HMAC256(salt);
             // 附带username信息
             return JWT.create()
-                    .withClaim("userName", username)
+                    .withClaim("username", username)
                     .withExpiresAt(date)
                     .withIssuedAt(new Date())
                     .sign(algorithm);

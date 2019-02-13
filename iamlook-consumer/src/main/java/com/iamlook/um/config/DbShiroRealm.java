@@ -46,9 +46,8 @@ public class DbShiroRealm extends AuthorizingRealm {
 
 		//从数据库中获取用户信息,这里写死
 		LoginUser user = iSysUserService.getUserInfo(username);
-		user.setEncryptPwd(new Sha256Hash("123456", encryptSalt).toHex());
-
-		if(user == null)
+        user.setEncryptPwd(new Sha256Hash("123456", encryptSalt).toHex());
+        if(user == null)
 			throw new AuthenticationException("用户名或者密码错误");
 		
 		return new SimpleAuthenticationInfo(user, user.getEncryptPwd(), ByteSource.Util.bytes(encryptSalt), "dbRealm");

@@ -7,6 +7,7 @@ import com.iamlook.um.utils.SpringContextUtil;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
+import org.apache.shiro.mgt.AuthorizingSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.realm.Realm;
@@ -32,7 +33,7 @@ import java.util.Map;
 public class ShiroConfig {
 
     @Bean
-    public FilterRegistrationBean filterRegistrationBean(@Qualifier("securityManager")SecurityManager securityManager) throws Exception{
+    public FilterRegistrationBean filterRegistrationBean(SecurityManager securityManager) throws Exception{
         FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
         filterRegistration.setFilter((Filter)shiroFilter(securityManager).getObject());
         filterRegistration.addInitParameter("targetFilterLifecycle", "true");
@@ -58,15 +59,6 @@ public class ShiroConfig {
         return sessionStorageEvaluator;
     }
 
-    //配置核心安全事务管理器
-    @Bean(name="securityManager")
-    public SecurityManager securityManager() {
-        System.err.println("--------------shiro已经加载----------------");
-        DefaultWebSecurityManager manager=new DefaultWebSecurityManager();
-        manager.setRealm(dbShiroRealm());
-        return manager;
-    }
-
     @Bean(name="dbRealm")
     public Realm dbShiroRealm() {
         DbShiroRealm myShiroRealm = new DbShiroRealm();
@@ -85,7 +77,7 @@ public class ShiroConfig {
      * 设置过滤器
      */
     @Bean("shiroFilter")
-    public ShiroFilterFactoryBean shiroFilter(@Qualifier("securityManager")SecurityManager securityManager) {
+    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
     	ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         factoryBean.setSecurityManager(securityManager);
         Map<String, Filter> filterMap = factoryBean.getFilters();

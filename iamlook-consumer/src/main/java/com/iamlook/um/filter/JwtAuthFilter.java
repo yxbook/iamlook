@@ -104,7 +104,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
             LoginUser user = (LoginUser) subject.getPrincipal();
             boolean shouldRefresh = shouldTokenRefresh(JwtUtils.getIssuedAt(jwtToken.getToken()));
             if(shouldRefresh) {
-                newToken = JwtUtils.sign(user.getUserName(), user.getSalt(), 3600);
+                newToken = JwtUtils.sign(user.getUsername(), user.getSalt(), 3600);
             }
         }
         if(StringUtils.isNotBlank(newToken))
