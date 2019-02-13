@@ -41,7 +41,8 @@ public class LoginController {
 
             LoginUser user = (LoginUser) subject.getPrincipal();
             //生成jwt token，设置过期时间为1小时
-            String salt = JwtUtils.generateSalt();
+            //String salt = JwtUtils.generateSalt();
+            String salt = "12345";
             String jwtToken = JwtUtils.sign(user.getUsername(), salt, 3600);
             /*
             *

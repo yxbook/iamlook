@@ -2,21 +2,15 @@ package com.iamlook.um.config;
 
 import com.iamlook.um.filter.AnyRolesAuthorizationFilter;
 import com.iamlook.um.filter.JwtAuthFilter;
-import com.iamlook.um.service.ISysUserService;
-import com.iamlook.um.utils.SpringContextUtil;
-import org.apache.shiro.authc.Authenticator;
-import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
-import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
-import org.apache.shiro.mgt.AuthorizingSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.mgt.SessionStorageEvaluator;
+import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.mgt.DefaultWebSessionStorageEvaluator;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,12 +38,13 @@ public class ShiroConfig {
         return filterRegistration;
     }
 
+    //配置核心安全事务管理器
     @Bean
-    public Authenticator authenticator() {
-        ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
-        authenticator.setRealms(Arrays.asList(jwtShiroRealm(), dbShiroRealm()));
-        authenticator.setAuthenticationStrategy(new FirstSuccessfulStrategy());
-        return authenticator;
+    public SessionsSecurityManager securityManager() {
+        System.err.println("--------------shiro已经加载----------------");
+        DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
+        manager.setRealms(Arrays.asList(jwtShiroRealm(), dbShiroRealm()));
+        return manager;
     }
 
     @Bean
